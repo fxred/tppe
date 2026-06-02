@@ -1,0 +1,234 @@
+UnB - Universidade de Brasilia  
+FCTE - Faculdade de Ciencias e Tecnologias em Engenharias  
+TPPE - Técnicas de Programação para Plataformas Emergentes  
+---
+
+Trabalho Prático - Valor 40 pontos. 
+
+Enunciado Geral 
+
+* Os trabalho prático será realizado em 3 etapas, com os conteúdos distribuídos
+  da seguinte maneira: 
+  - Etapa 1: TDD
+  - Etapa 2: Refactoring
+
+* O trabalho deverá ser realizado em grupos de 3 a 5 alunos. 
+* Os grupos deverão ser informados através do formulário presente no seguinte [link](https://forms.gle/A28odYrQxo7fv19J8).
+* A divisão dos pontos do trabalho será a seguinte: 
+  - Etapa 1 (TDD): 15 pontos
+  - Etapa 2 (Refactoring): 25 pontos
+
+* O trabalho pode ser desenvolvido na linguagem que o grupo desejar, desde que
+  haja um framework de testes unitários que contenha os recursos de testes
+  unitários vistos em sala de aula (principalmente categorias de testes, testes
+  de exceção, suites de testes, testes parametrizados).
+
+# Cenário da aplicação
+
+Repositórios de informações científicas desempenham um papel importante nas
+instituições de pesquisa (tais como universidades públicas ou privadas,
+institutos de pesquisa, dentre outros), fundações de fomento à pesquisa (tais
+como agências de pesquisa -- FAPDF, por exemplo --, CAPES, CNPq, etc..) e órgãos
+governamentais. Tais repositórios ajudam na elaboração de editais,
+acompanhamento e avaliação da aplicação dos recursos financeiros nas pesquisas
+realizadas. Para isso, é necessário que os dados de todo o ecossistema de
+pesquisas sejam avaliados quanto à sua qualidade. 
+
+O desafio da avaliação desses dados reside na integração de diferentes fontes de
+dados, cada uma com seu formato de representação. Parte dessas informações vêm
+de fontes autodeclaratórias, em que os próprios pesquisadores são os
+responsáveis por cadastrar suas produções (o Currículo Lattes é o exemplo mais
+notório de repositório autodeclaratório). Além disso, muitos repositórios atuam
+como indexadores de informações científicas que estão armazenados em repositório
+de terceiros. Por exemplo, uma publicação de uma revista científica da área da
+Computação fica armazenada no repositório da ACM, mas é indexada por outros
+repositórios como ScienceDirect, IEEEXplore, Scopus, etc... Ao integrar os dados
+desses diferentes indexadores, é comum que duplicidades de registros sejam
+inseridas no banco de dados. 
+
+Busca-se, na curadoria das informações desse repositório, cuidar das
+representações desses dados de modo a excluir registros duplicados, unificar as
+informações para o que é chamado de padrão-ouro, casos em que há uma
+representação padrão a ser adotada para uma parte do registro de informação
+científica. 
+
+# Exemplo de curadoria de dados
+
+Seja o seguinte conjunto de registros para uma publicação (dados anonimizados).
+Esses dados são, respectivamente, o ID do autor e seu nome dentro de uma mesma
+publicação. 
+
+| ID    | Nome                 |
+|:------|:---------------------|
+| 28372  | Ana de Mattos Seabra |
+| 243349 | Ana de Mattos Seabra |
+| 582585 | A. M. Seabra |
+| 582585 | Seabra A. M. |
+| 582585 | AM Seabra |
+| 582585 | Ana Mattos Seabra |
+| 28371  | Cassius de Souza |
+| 746936 | Cassius Souza |
+| 746936 | Souza C. |
+| 746936 | C. Souza |
+| 746936 | Souza, Cassius de |
+| 31303  | Veronica de Oliveira Moreira |
+| 243352 | Verônica de Oliveira Moreira |
+| 608303 | V. de O. Moreira |
+| 608303 | Moreira V O |
+| 608303 | Moreira V. de O.|
+| 746941 | Verônica de Oliveira Noreira |
+| 746937 | Luiz de Oliveira de Souza |
+| 608296 | Luiz Oliveira Souza |
+| 549242 | Souza, Luiz de Oliveira   |
+| 549242 | Luiz de O. de Souza |
+| 31297  | Souza, L. O. |
+| 31299  | Monica Hirata Sant`anna |
+| 433095 | Mônica Hirata Sant’anna |
+| 746942 | Mônica Hirata St'anna   |
+| 549244 | Sant'anna M. H. |
+| 608298 | M. H. Sant'anna |
+| 763027 | Vanilda Cristina Junior |
+| 763027 | Vanilda Cristina Junior |
+| 335284 | Vanilda Cristina Júnior |
+| 335284 | Vanilda Cristina Júnior |
+| 335284 | Vanilda Cristina Júnior |
+| 554799 | Sergio Henrique Guaraldi |
+| 243350 | Sérgio Henrique Guaraldi |
+| 954057 | Sérgio Henrique Guaraldi |
+| 954057 | Sérgio Henrique Guaraldi |
+| 954057 | Sérgio Henrique Guaraldi |
+| 954057 | Sérgio Henrique Guaraldi |
+| 31298  | Raphael Goncalves Viana |
+| 433094 | Raphael Gonçalves Viana |
+| 549243 | Raphael Gonçalves Viana |
+| 608297 | Raphael Gonçalves Viana |
+| 746938 | Raphael Gonçalves Viana |
+| 899639 | Lilian Luíza Viana Vieira |
+| 243351 | Lílian Luíza Viana Vieira |
+| 663795 | Lílian Luíza Viana Vieira |
+| 663795 | Lílian Luíza Viana Vieira |
+| 663795 | Lílian Luíza Viana Vieira |
+| 663795 | Lilian Luíza Viana Vieira |
+| 713897 | Yuri Vieira Faria |
+| 713897 | Yuri Vieira Faria |
+| 713897 | Yuri Vieira Faria |
+| 713897 | Yuri Vieira Faria |
+
+
+## Caso 1: Diferenças de grafia (tipográficas) 
+
+| ID     |                      |
+|--------|----------------------|
+| 31299  | M**o**nica Hirata Sant**`**anna |
+| 433095 | M**ô**nica Hirata Sant**’**anna |
+|--------|----------------------|
+| 554799 | S**e**rgio Henrique Guaraldi |
+| 243350 | S**é**rgio Henrique Guaraldi |
+
+
+## Caso 2: Sobrenome + Iniciais dos nomes
+
+| ID     |                      |
+|--------|----------------------|
+| 28372  | Ana de Mattos Seabra |
+| 582585 | Seabra A. M. |
+|--------|----------------------|
+| 28371  | Cassius de Souza |
+| 746936 | Souza C. |
+
+## Caso 3: Particulas *de* e uso de ponto nas abreviações opcionais
+
+| ID     |                      |
+|--------|----------------------|
+| 746937 | Luiz de Oliveira de Souza |
+| 608296 | Luiz Oliveira Souza |
+| 549242 | Souza, Luiz de O   |
+| 549242 | Luiz de O. de Souza |
+
+## Caso 4: Iniciais dos nomes agrupadas + sobrenome
+
+| ID     |                      |
+|--------|----------------------|
+| 763027 | Vanilda Cristina Junior |
+| 763027 | VC Junior |
+
+## Caso 5: IDs diferentes para o mesmo autor.
+
+| ID     |                      |
+|--------|----------------------|
+| 31298  | Raphael Goncalves Viana |
+| 433094 | Raphael Gonçalves Viana |
+| 549243 | Raphael Gonçalves Viana |
+| 608297 | Raphael Gonçalves Viana |
+| 746938 | Raphael Gonçalves Viana |
+
+# Enunciado do Trabalho Prático 1
+
+
+# Critérios de correção:
+
+# Data de entrega: 
+
+- 10/06/2025, 16:00hs, via repositório dos grupos. 
+
+
+---
+# Enunciado do Trabalho Prático 2 - Refatoração
+
+O trabalho prático #2 consiste na aplicação de operações de refatoração e será
+realizado com base nos artefatos entregues pelos grupos no TP1. 
+
+Todos os grupos vão aplicar as mesmas operações de refatoração em seus
+trabalhos, a citar, `Extrair Método`, `Substituir Método por Objeto-Método`, e
+`Extrair Classe`. A tabela abaixo mostra para cada grupo, onde cada uma dessas
+operações de refatoração deverá ser aplicada. Identifique a qual grupo você
+pertence pelo número de matrícula. 
+
+
+
+| Grupo # | Matrículas dos componentes                            | Extrair Método                           | Substituir Método por Objeto Método                  | Extrair classe    | 
+|:-------:|:------------------------------------------------------|:-----------------------------------------|:-----------------------------------------------------|:---------------   |
+|    1    |                                                       |                                          |                                                      |                   |
+|    2    |                                                       |                                          |                                                      |                   |
+|    3    |                                                       |                                          |                                                      |                   |
+|    4    |                                                       |                                          |                                                      |                   |
+|    5    |                                                       |                                          |                                                      |                   |
+|    6    |                                                       |                                          |                                                      |                   |
+|    7    |                                                       |                                          |                                                      |                   |
+|    8    |                                                       |                                          |                                                      |                   |
+|    9    |                                                       |                                          |                                                      |                   |
+|   10    |                                                       |                                          |                                                      |                   |
+|   11    |                                                       |                                          |                                                      |                   |
+|   12    |                                                       |                                          |                                                      |                   |
+|   13    |                                                       |                                          |                                                      |                   |
+|   14    |                                                       |                                          |                                                      |                   |
+|   15    |                                                       |                                          |                                                      |                   |
+|   16    |                                                       |                                          |                                                      |                   |
+|   17    |                                                       |                                          |                                                      |                   |
+|   18    |                                                       |                                          |                                                      |                   |
+|   19    |                                                       |                                          |                                                      |                   |
+|   20    |                                                       |                                          |                                                      |                   |
+
+## Formato de entrega: 
+
+- Para cada operação de refatoração aplicada, o grupo deverá ao final realizar
+  um commit com a seguinte mensagem de título:  
+  `[Refact] <operação>, <Classe / Método alvo>`  
+  em que `<operação>` deve ser o nome da refatoração aplicada e `<Classe /
+Método alvo>` deve ser o nome do local onde ela foi aplicada. 
+- A entrega será feita pelo envio dos commits aos repositórios dos grupos.
+  Somente serão aceitos commits até a data limite da entrega, commits
+posteriores serão desconsiderados. 
+
+
+## Critérios de Correção: 
+- Para cada operação de refatoração: 
+  - A refatoração foi aplicada no lugar indicado?
+  - A operação de refatoração foi aplicada corretamente, em especial, aquelas
+    operações realizadas sem suporte ferramental? 
+  - O resultado da operação de refatoração é correto do ponto de vista da
+    estrutura do código gerado? 
+- Os testes continuam efetivos e passando? 
+
+## Data-limite para entrega: 
+- xx/xx/xxxx, xx:xxhs. 

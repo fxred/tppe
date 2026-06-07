@@ -95,7 +95,6 @@ public class Case3Rule implements DeduplicationRule {
         if (name == null) {
             return Collections.emptyList();
         }
-        // Remove pontos e converte para minúsculas
         String clean = name.replace(".", "").toLowerCase();
         String[] rawTokens = clean.split("\\s+");
         List<String> tokens = new ArrayList<>();

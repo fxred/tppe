@@ -26,7 +26,6 @@ public class Case3Test {
 
     public static Stream<TestData> provideCase3Data() {
         return Stream.of(
-            // Cenário 1: Exemplo do enunciado (Luiz de Oliveira de Souza)
             new TestData(
                 List.of(
                     new AuthorRecord(746937, "Luiz de Oliveira de Souza"),
@@ -39,7 +38,6 @@ public class Case3Test {
                     new AuthorRecord(549242, "Luiz de Oliveira de Souza")
                 )
             ),
-            // Cenário 2: Adicional para satisfazer "no mínimo dois conjuntos de dados" (Ana de Mattos Seabra)
             new TestData(
                 List.of(
                     new AuthorRecord(28372, "Ana de Mattos Seabra"),
@@ -58,7 +56,6 @@ public class Case3Test {
     @ParameterizedTest
     @MethodSource("provideCase3Data")
     public void testDeduplicationCase3(TestData data) {
-        // Testa o deduplicador configurado apenas com a regra do Caso 3
         AuthorDeduplicator deduplicator = new AuthorDeduplicator(List.of(new Case3Rule()));
         List<AuthorRecord> result = deduplicator.deduplicate(data.input);
         

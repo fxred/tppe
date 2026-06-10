@@ -68,6 +68,27 @@ public class Case2Test {
                                 new AuthorRecord(31303, "Veronica de Oliveira Moreira"),
                                 new AuthorRecord(608303, "Veronica de Oliveira Moreira")
                         )
+                ),
+                // Formato: "I. I. Sobrenome" (iniciais antes do sobrenome)
+                new TestData(
+                        List.of(
+                                new AuthorRecord(28372, "Ana de Mattos Seabra"),
+                                new AuthorRecord(582585, "A. M. Seabra")
+                        ),
+                        List.of(
+                                new AuthorRecord(28372, "Ana de Mattos Seabra"),
+                                new AuthorRecord(582585, "Ana de Mattos Seabra")
+                        )
+                ),
+                new TestData(
+                        List.of(
+                                new AuthorRecord(31299, "Mônica Hirata Sant'anna"),
+                                new AuthorRecord(608298, "M. H. Sant'anna")
+                        ),
+                        List.of(
+                                new AuthorRecord(31299, "Mônica Hirata Sant'anna"),
+                                new AuthorRecord(608298, "Mônica Hirata Sant'anna")
+                        )
                 )
         );
     }

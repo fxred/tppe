@@ -65,9 +65,12 @@ public class Case2Rule implements DeduplicationRule {
             return true;
         }
         return matchesAbbreviatedForm(name1, name2)
-                || matchesAbbreviatedForm(name2, name1);
+                || matchesAbbreviatedForm(name2, name1)
+                || matchesInitialsFirst(name1, name2)
+                || matchesInitialsFirst(name2, name1);
     }
 
+    // Formato: "Sobrenome I. I." (sobrenome primeiro, iniciais depois)
     private boolean matchesAbbreviatedForm(String abbreviated, String full) {
         String[] abbrTokens = tokenize(abbreviated);
         String[] fullTokens  = tokenize(full);
@@ -105,6 +108,58 @@ public class Case2Rule implements DeduplicationRule {
             }
             char expectedInitial = normalize(meaningfulFirstNames.get(i)).charAt(0);
             char actualInitial   = normalize(initial).charAt(0);
+            if (actualInitial != expectedInitial) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Formato: "I. I. Sobrenome" (iniciais primeiro, sobrenome no final)
+    private boolean matchesInitialsFirst(String abbreviated, String full) {
+        String[] abbrTokens = tokenize(abbreviated);
+        String[] fullTokens  = tokenize(full);
+
+        if (abbrTokens.length < 2 || fullTokens.length < 2) {
+            return false;
+        }
+
+        String abbrSurname = stripDots(abbrTokens[abbrTokens.length - 1]);
+        String fullSurname  = stripDots(fullTokens[fullTokens.length - 1]);
+
+        if (!normalize(abbrSurname).equals(normalize(fullSurname))) {
+            return false;
+        }
+
+        String[] initials    = Arrays.copyOfRange(abbrTokens, 0, abbrTokens.length - 1);
+        String[] firstNames  = Arrays.copyOfRange(fullTokens, 0, fullTokens.length - 1);
+
+        // Filtra partículas do nome completo (de, da, do, das, dos)
+        List<String> meaningfulFirstNames = new ArrayList<>();
+        for (String t : firstNames) {
+            if (!isParticle(t)) {
+                meaningfulFirstNames.add(t);
+            }
+        }
+
+        // Verifica se todos os tokens abreviados são realmente iniciais
+        List<String> cleanInitials = new ArrayList<>();
+        for (String t : initials) {
+            String clean = stripDots(t);
+            if (clean.length() != 1) {
+                return false;
+            }
+            cleanInitials.add(clean);
+        }
+
+        if (cleanInitials.size() != meaningfulFirstNames.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < cleanInitials.size(); i++) {
+            char expectedInitial = normalize(meaningfulFirstNames.get(i)).charAt(0);
+            char actualInitial   = normalize(cleanInitials.get(i)).charAt(0);
             if (actualInitial != expectedInitial) {
                 return false;
             }

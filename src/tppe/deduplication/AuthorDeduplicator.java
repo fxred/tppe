@@ -11,6 +11,9 @@ public class AuthorDeduplicator {
     }
 
     public List<AuthorRecord> deduplicate(List<AuthorRecord> records) {
+        if (records == null) {
+            throw new IllegalArgumentException("Records list cannot be null");
+        }
         List<AuthorRecord> current = new ArrayList<>(records);
         for (DeduplicationRule rule : rules) {
             current = rule.apply(current);

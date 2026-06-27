@@ -8,6 +8,8 @@ public class Case3Rule implements DeduplicationRule {
         "de", "da", "do", "das", "dos"
     ));
 
+    private final NameProcessor nameProcessor = new NameProcessor();
+
     @Override
     public List<AuthorRecord> apply(List<AuthorRecord> records) {
         if (records == null) {
@@ -25,7 +27,7 @@ public class Case3Rule implements DeduplicationRule {
             boolean added = false;
             for (List<Integer> cluster : clusters) {
                 AuthorRecord representative = records.get(cluster.get(0));
-                if (isCompatible(record.getName(), representative.getName())) {
+                if (nameProcessor.isCompatible(record.getName(), representative.getName())) {
                     cluster.add(i);
                     added = true;
                     break;
@@ -61,50 +63,6 @@ public class Case3Rule implements DeduplicationRule {
         return output;
     }
 
-    private boolean isCompatible(String name1, String name2) {
-        List<String> tokens1 = getNonParticleTokens(name1);
-        List<String> tokens2 = getNonParticleTokens(name2);
-
-        if (tokens1.size() != tokens2.size()) {
-            return false;
-        }
-
-        for (int i = 0; i < tokens1.size(); i++) {
-            String t1 = tokens1.get(i);
-            String t2 = tokens2.get(i);
-
-            if (t1.equals(t2)) {
-                continue;
-            }
-
-            if (t1.length() == 1 && t2.startsWith(t1)) {
-                continue;
-            }
-
-            if (t2.length() == 1 && t1.startsWith(t2)) {
-                continue;
-            }
-
-            return false;
-        }
-
-        return true;
-    }
-
-    private List<String> getNonParticleTokens(String name) {
-        if (name == null) {
-            return Collections.emptyList();
-        }
-        String clean = name.replace(".", "").toLowerCase();
-        String[] rawTokens = clean.split("\\s+");
-        List<String> tokens = new ArrayList<>();
-        for (String t : rawTokens) {
-            if (!t.isEmpty() && !PARTICLES.contains(t)) {
-                tokens.add(t);
-            }
-        }
-        return tokens;
-    }
 
     private int getCompletenessScore(String name) {
         if (name == null) {

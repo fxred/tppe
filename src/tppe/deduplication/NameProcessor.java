@@ -52,4 +52,30 @@ public class NameProcessor {
         }
         return tokens;
     }
+
+    public int getCompletenessScore(String name) {
+        if (name == null) {
+            return 0;
+        }
+        String clean = name.replace(".", "").toLowerCase();
+        String[] rawTokens = clean.split("\\s+");
+
+        int fullTokensCount = 0;
+        int particleCount = 0;
+
+        for (String t : rawTokens) {
+            if (t.isEmpty()) {
+                continue;
+            }
+            if (PARTICLES.contains(t)) {
+                particleCount++;
+            } else {
+                if (t.length() > 1) {
+                    fullTokensCount++;
+                }
+            }
+        }
+
+        return (fullTokensCount * 10) + particleCount;
+    }
 }

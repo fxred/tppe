@@ -4,10 +4,6 @@ import java.util.*;
 
 public class Case3Rule implements DeduplicationRule {
 
-    private static final Set<String> PARTICLES = new HashSet<>(Arrays.asList(
-        "de", "da", "do", "das", "dos"
-    ));
-
     private final NameProcessor nameProcessor = new NameProcessor();
 
     @Override
@@ -42,10 +38,10 @@ public class Case3Rule implements DeduplicationRule {
 
         for (List<Integer> cluster : clusters) {
             String goldName = records.get(cluster.get(0)).getName();
-            int maxScore = getCompletenessScore(goldName);
+            int maxScore = nameProcessor.getCompletenessScore(goldName);
             for (int idx : cluster) {
                 String name = records.get(idx).getName();
-                int score = getCompletenessScore(name);
+                int score = nameProcessor.getCompletenessScore(name);
                 if (score > maxScore) {
                     maxScore = score;
                     goldName = name;
@@ -61,32 +57,5 @@ public class Case3Rule implements DeduplicationRule {
             output.add(new AuthorRecord(records.get(i).getId(), unifiedNames[i]));
         }
         return output;
-    }
-
-
-    private int getCompletenessScore(String name) {
-        if (name == null) {
-            return 0;
-        }
-        String clean = name.replace(".", "").toLowerCase();
-        String[] rawTokens = clean.split("\\s+");
-
-        int fullTokensCount = 0;
-        int particleCount = 0;
-
-        for (String t : rawTokens) {
-            if (t.isEmpty()) {
-                continue;
-            }
-            if (PARTICLES.contains(t)) {
-                particleCount++;
-            } else {
-                if (t.length() > 1) {
-                    fullTokensCount++;
-                }
-            }
-        }
-
-        return (fullTokensCount * 10) + particleCount;
     }
 }

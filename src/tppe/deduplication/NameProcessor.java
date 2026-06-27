@@ -8,6 +8,36 @@ public class NameProcessor {
         "de", "da", "do", "das", "dos"
     ));
 
+    public boolean isCompatible(String name1, String name2) {
+        List<String> tokens1 = getNonParticleTokens(name1);
+        List<String> tokens2 = getNonParticleTokens(name2);
+
+        if (tokens1.size() != tokens2.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < tokens1.size(); i++) {
+            String t1 = tokens1.get(i);
+            String t2 = tokens2.get(i);
+
+            if (t1.equals(t2)) {
+                continue;
+            }
+
+            if (t1.length() == 1 && t2.startsWith(t1)) {
+                continue;
+            }
+
+            if (t2.length() == 1 && t1.startsWith(t2)) {
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
     public List<String> getNonParticleTokens(String name) {
         if (name == null) {
             return Collections.emptyList();

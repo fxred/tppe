@@ -6,15 +6,23 @@ public class Case1Rule implements DeduplicationRule {
 
     @Override
     public List<AuthorRecord> apply(List<AuthorRecord> records) {
-        if (records == null) {
-            throw new IllegalArgumentException("Records list cannot be null");
-        }
+        validateInput(records);
         if (records.isEmpty()) {
             return new ArrayList<>();
         }
-
+        List<List<Integer>> clusters = buildClusters(records);
+        String[] unifiedNames = computeUnifiedNames(records, clusters);
+        return buildOutput(records, unifiedNames);
+    }
+ 
+    private void validateInput(List<AuthorRecord> records) {
+        if (records == null) {
+            throw new IllegalArgumentException("Records list cannot be null");
+        }
+    }
+ 
+    private List<List<Integer>> buildClusters(List<AuthorRecord> records) {
         List<List<Integer>> clusters = new ArrayList<>();
-
         for (int i = 0; i < records.size(); i++) {
             AuthorRecord record = records.get(i);
             String normalizedName = normalizeForGrouping(record.getName());
@@ -34,7 +42,10 @@ public class Case1Rule implements DeduplicationRule {
                 clusters.add(newCluster);
             }
         }
-
+        return clusters;
+    }
+ 
+    private String[] computeUnifiedNames(List<AuthorRecord> records, List<List<Integer>> clusters) {
         String[] unifiedNames = new String[records.size()];
         for (List<Integer> cluster : clusters) {
             String goldName = chooseGoldName(records, cluster);
@@ -42,13 +53,17 @@ public class Case1Rule implements DeduplicationRule {
                 unifiedNames[idx] = goldName;
             }
         }
-
+        return unifiedNames;
+    }
+ 
+    private List<AuthorRecord> buildOutput(List<AuthorRecord> records, String[] unifiedNames) {
         List<AuthorRecord> output = new ArrayList<>(records.size());
         for (int i = 0; i < records.size(); i++) {
             output.add(new AuthorRecord(records.get(i).getId(), unifiedNames[i]));
         }
         return output;
     }
+
 
     private String normalizeForGrouping(String name) {
         if (name == null) {
